@@ -80,7 +80,8 @@ deploy-production:
 
 before_script:
   - *devops
-
+  - ssh_agent
+  
 after_script:
   - *devops
   - cleanup
