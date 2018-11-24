@@ -2,8 +2,7 @@ image: "inspectorio/python:2.7"
 
 variables:
   PROJECT_NAME: spring-example
-  CHART_NAME: spring-example
-  AWS_REGION: ap-northeast-1
+  CHART_NAME: spring-example  
 
 stages:
   - build
