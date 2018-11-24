@@ -1,0 +1,86 @@
+image: "inspectorio/python:2.7"
+
+variables:
+  PROJECT_NAME: spring-example
+  CHART_NAME: spring-example
+  AWS_REGION: ap-northeast-1
+
+stages:
+  - build
+  - deploy
+
+dockerize:
+  stage: build
+  image: docker:stable
+  services:
+    - docker:stable-dind
+  script:
+    - docker run -it --rm --name my-maven-project -v "$(pwd)":/usr/src/mymaven -w /usr/src/mymaven maven:3.3-jdk-8-alpine mvn -B clean compile package    
+    - build
+  only:
+    - master    
+    - /^v\d+\.\d+\.\d+$/
+    - /^v\d+\.\d+\.\d+-alpha\.\d+$/
+
+deploy-dev:
+  stage: deploy
+  variables:
+    KUBERNETES_CLUSTER: "${KUBE_STG_CLUSTER}"
+    KUBERNETES_CLUSTER_CONFIG: "${KUBE_STG_CONFIG}"
+    RELEASE_NAME: myspring-dev
+  script:
+    - install_dependencies
+    - deploy
+  environment:
+    name: dev
+    url: https://myspring-kube-dev.inspectorio.com
+  only:
+    - /^v\d+\.\d+\.\d+-alpha\.\d+$/
+
+deploy-qa:
+  stage: deploy
+  variables:
+    KUBERNETES_CLUSTER: "${KUBE_STG_CLUSTER}"
+    KUBERNETES_CLUSTER_CONFIG: "${KUBE_STG_CONFIG}"
+    RELEASE_NAME: myspring-staging
+  script:
+    - install_dependencies
+    - deploy
+  environment:
+    name: staging
+    url: https://myspring-kube-stag.saas.inspectorio.com
+  only:
+    - master
+
+deploy-production:
+  stage: deploy
+  variables:
+    KUBERNETES_CLUSTER: "${KUBE_PRD_CLUSTER}"
+    KUBERNETES_CLUSTER_CONFIG: "${KUBE_PRD_CONFIG}"
+    RELEASE_NAME: myspring-prod
+  script:
+    - install_dependencies
+    - deploy
+  environment:
+    name: prod
+    url: https://myspring-kube-prod.inspectorio.com
+  only:
+    - /^v\d+\.\d+\.\d+$/
+
+.devops: &devops |
+  # Share Libs including variables and functions
+  [[ "$TRACE" ]] && set -x
+  which curl || ( apt-get update -qq -y && apt-get install -qq -y curl ) || ( apk add --no-cache curl )
+  # only bash support 'process substitution'
+  # docker dind is alpine based. Use workaround instead
+  # source <(curl -s -XGET -H "PRIVATE-TOKEN: ${PIPELINE_AUTH}" "${PIPELINE_URL}")
+  curl -s -XGET -H "PRIVATE-TOKEN: ${PIPELINE_AUTH}" "${PIPELINE_SCRIPT_V21}" -o pipeline.sh
+  source ./pipeline.sh
+
+
+before_script:
+  - *devops
+
+after_script:
+  - *devops
+  - cleanup
