@@ -15,7 +15,7 @@ dockerize:
   services:
     - docker:stable-dind
   script:
-    - docker run -it --rm --name my-maven-project -v "$(pwd)":/usr/src/mymaven -w /usr/src/mymaven maven:3.3-jdk-8-alpine mvn -B clean compile package    
+    - docker run --rm --name my-maven-project -v "$(pwd)":/usr/src/mymaven -w /usr/src/mymaven maven:3.3-jdk-8-alpine mvn -B clean compile package    
     - build
   only:
     - master    
