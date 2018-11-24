@@ -23,9 +23,7 @@ dockerize:
 
 deploy-dev:
   stage: deploy
-  variables:
-    KUBERNETES_CLUSTER: "${KUBE_STG_CLUSTER}"
-    KUBERNETES_CLUSTER_CONFIG: "${KUBE_STG_CONFIG}"
+  variables:    
     RELEASE_NAME: myspring-dev
   script:
     - install_dependencies
@@ -38,9 +36,7 @@ deploy-dev:
 
 deploy-qa:
   stage: deploy
-  variables:
-    KUBERNETES_CLUSTER: "${KUBE_STG_CLUSTER}"
-    KUBERNETES_CLUSTER_CONFIG: "${KUBE_STG_CONFIG}"
+  variables:    
     RELEASE_NAME: myspring-staging
   script:
     - install_dependencies
@@ -53,9 +49,7 @@ deploy-qa:
 
 deploy-production:
   stage: deploy
-  variables:
-    KUBERNETES_CLUSTER: "${KUBE_PRD_CLUSTER}"
-    KUBERNETES_CLUSTER_CONFIG: "${KUBE_PRD_CONFIG}"
+  variables:    
     RELEASE_NAME: myspring-prod
   script:
     - install_dependencies
