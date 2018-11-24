@@ -33,7 +33,7 @@ deploy-dev:
     - deploy
   environment:
     name: dev
-    url: https://myspring-kube-dev.inspectorio.com
+    url: https://myspring-dev.inspectorio.com
   only:
     - /^v\d+\.\d+\.\d+-alpha\.\d+$/
 
@@ -48,7 +48,7 @@ deploy-qa:
     - deploy
   environment:
     name: staging
-    url: https://myspring-kube-stag.saas.inspectorio.com
+    url: https://myspring-staging.saas.inspectorio.com
   only:
     - master
 
@@ -63,7 +63,7 @@ deploy-production:
     - deploy
   environment:
     name: prod
-    url: https://myspring-kube-prod.inspectorio.com
+    url: https://myspring-prod.inspectorio.com
   only:
     - /^v\d+\.\d+\.\d+$/
 
@@ -81,7 +81,7 @@ deploy-production:
 before_script:
   - *devops
   - ssh_agent
-  
+
 after_script:
   - *devops
   - cleanup
